@@ -1,0 +1,187 @@
+{
+  "identity": {
+    "name": "E1",
+    "persona": "Creative Designer (Top 1%)",
+    "principles": [
+      "Fusion over Imitation",
+      "Emotion First",
+      "Content is King",
+      "Zoom In",
+      "Negative Space",
+      "Contrast"
+    ]
+  },
+  "project": {
+    "name": "Calorie & Progress Tracker",
+    "theme": "Light Mode (Organic & Earthy with Vibrant Accents)",
+    "mood": "Encouraging, Fresh, Frictionless, Personal Wellness Coach",
+    "target_audience": "Health-conscious adults (25-45), mobile users"
+  },
+  "typography": {
+    "fonts": {
+      "heading": {
+        "family": "Manrope",
+        "weights": ["600", "700", "800"],
+        "import_url": "https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap"
+      },
+      "body": {
+        "family": "Be Vietnam Pro",
+        "weights": ["400", "500", "600"],
+        "import_url": "https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap"
+      }
+    },
+    "scale": {
+      "h1": "text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-slate-900",
+      "h2": "text-2xl md:text-3xl font-bold tracking-tight text-slate-800",
+      "h3": "text-xl font-bold text-slate-800",
+      "body_lg": "text-lg font-medium text-slate-600 leading-relaxed",
+      "body_base": "text-base font-normal text-slate-600 leading-relaxed",
+      "caption": "text-sm font-medium text-slate-400 uppercase tracking-widest"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": {
+        "default": "#FDFCF8",
+        "paper": "#FFFFFF",
+        "subtle": "#F2F4F6"
+      },
+      "primary": {
+        "main": "#88C425",
+        "hover": "#76AD1B",
+        "foreground": "#FFFFFF"
+      },
+      "secondary": {
+        "main": "#1E293B",
+        "foreground": "#FFFFFF"
+      },
+      "accent": {
+        "coral": "#FF7E67",
+        "protein": "#6366F1",
+        "carbs": "#F59E0B",
+        "fat": "#10B981",
+        "water": "#0EA5E9"
+      },
+      "text": {
+        "primary": "#1E293B",
+        "secondary": "#64748B",
+        "muted": "#94A3B8"
+      },
+      "border": {
+        "default": "#E2E8F0",
+        "subtle": "#F1F5F9"
+      }
+    },
+    "gradients": {
+      "calorie_ring": "from-orange-400 to-rose-500",
+      "primary_action": "from-[#88C425] to-[#76AD1B]"
+    }
+  },
+  "layout": {
+    "spacing": {
+      "container_padding": "p-6 md:p-8",
+      "section_gap": "gap-8 md:gap-12",
+      "card_padding": "p-6"
+    },
+    "radius": {
+      "default": "rounded-2xl",
+      "card": "rounded-[2rem]",
+      "button": "rounded-full",
+      "input": "rounded-xl"
+    },
+    "shadows": {
+      "card": "shadow-[0_8px_30px_rgba(0,0,0,0.04)]",
+      "float": "shadow-[0_20px_40px_rgba(0,0,0,0.08)]",
+      "inner": "shadow-inner"
+    },
+    "grid": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6",
+      "bento": "grid grid-cols-2 md:grid-cols-4 gap-4"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-gradient-to-r from-[#88C425] to-[#76AD1B] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 font-bold tracking-wide rounded-full px-8 py-3",
+      "secondary": "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all font-semibold rounded-full px-6 py-2 shadow-sm",
+      "ghost": "text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-full px-4 py-2 transition-colors",
+      "floating_action": "fixed bottom-24 right-6 w-14 h-14 bg-slate-900 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-transform z-50 md:hidden"
+    },
+    "cards": {
+      "dashboard_stat": "bg-white rounded-[2rem] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] transition-shadow duration-300",
+      "food_item": "bg-white rounded-2xl p-4 flex items-center gap-4 border border-transparent hover:border-slate-100 transition-colors cursor-pointer"
+    },
+    "navigation": {
+      "bottom_bar": "fixed bottom-6 left-4 right-4 h-16 bg-white/90 backdrop-blur-xl border border-slate-200/50 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.1)] flex items-center justify-around z-40 max-w-md mx-auto"
+    },
+    "inputs": {
+      "search": "w-full h-12 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-[#88C425]/20 pl-12 text-slate-700 placeholder:text-slate-400 font-medium transition-all"
+    }
+  },
+  "assets": {
+    "icons": {
+      "library": "lucide-react",
+      "style": "stroke-[2px] rounded-lg"
+    },
+    "images": [
+      {
+        "category": "onboarding_motivation",
+        "url": "https://images.unsplash.com/photo-1762169786069-be5b81cd42b9",
+        "description": "Three people jogging on a sunny sidewalk, conveying energy and community."
+      },
+      {
+        "category": "food_salad",
+        "url": "https://images.unsplash.com/photo-1675092789086-4bd2b93ffc69",
+        "description": "Top-down view of a colorful healthy salad bowl."
+      },
+      {
+        "category": "hydration",
+        "url": "https://images.unsplash.com/photo-1712231381355-fdabc9b803d4",
+        "description": "Woman holding a glass of water, smiling."
+      },
+      {
+        "category": "smoothie_green",
+        "url": "https://images.unsplash.com/photo-1611497426695-412abe2f287b",
+        "description": "Fresh green smoothie in a clear glass."
+      },
+      {
+        "category": "activity_weights",
+        "url": "https://images.unsplash.com/photo-1603665409265-bdc00027c217",
+        "description": "Dumbbells on a gym floor."
+      }
+    ]
+  },
+  "motion": {
+    "transitions": "transition-all duration-300 ease-out",
+    "hover_lift": "hover:-translate-y-1 hover:shadow-lg",
+    "active_press": "active:scale-95",
+    "page_transition": "animate-in fade-in slide-in-from-bottom-4 duration-500"
+  },
+  "instructions_to_main_agent": {
+    "critical": [
+      "DO NOT use generic centered layouts. Use Bento Grids for stats.",
+      "Ensure the 'Calorie Ring' on the dashboard is the HERO element (massive size).",
+      "Use 'Shadcn/UI' components but override the default 'radius-md' with 'rounded-2xl' or 'rounded-3xl' to match the soft organic theme.",
+      "The bottom navigation bar must float above the content, not stick to the very bottom edge.",
+      "Use Recharts for the weight progress chart, styling the lines with a smooth curve (monotone) and gradient fill."
+    ],
+    "dashboard_structure": [
+      "Top Section: User greeting + Date + Avatar.",
+      "Hero Section: Circular Progress Ring (Calories Left) - Center aligned.",
+      "Mid Section: Macro Bars (Protein, Carbs, Fat) - Horizontal stack.",
+      "Grid Section: Water, Steps, Weight (Bento Grid).",
+      "List Section: Recent Meals (Timeline style)."
+    ],
+    "onboarding_flow": [
+      "Step 1: Personal Info (Name, Age, Gender)",
+      "Step 2: Stats (Height, Weight)",
+      "Step 3: Activity Level (Sedentary -> Athlete)",
+      "Step 4: Goal (Lose, Maintain, Gain)",
+      "Step 5: Review & Calculate"
+    ]
+  },
+  "accessibility": {
+    "contrast_check": "Ensure text on the primary green background is white. If using light green, use dark text.",
+    "touch_targets": "All interactive elements must be at least 44x44px for mobile fingers.",
+    "focus_states": "Visible focus rings on all inputs and buttons for keyboard navigation."
+  }
+}
