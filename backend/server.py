@@ -3,6 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
+import certifi
 import os
 import logging
 from pathlib import Path
@@ -18,7 +19,14 @@ load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
+mongo_client_options = {
+    "serverSelectionTimeoutMS": int(os.environ.get("MONGO_SERVER_SELECTION_TIMEOUT_MS", "30000")),
+}
+
+if mongo_url.startswith("mongodb+srv://") or "tls=true" in mongo_url.lower():
+    mongo_client_options["tlsCAFile"] = certifi.where()
+
+client = AsyncIOMotorClient(mongo_url, **mongo_client_options)
 db = client[os.environ['DB_NAME']]
 
 JWT_SECRET = os.environ.get('JWT_SECRET', 'dietlog-secret-key-change-in-prod')
@@ -637,7 +645,11 @@ async def seed_food_database():
 
 @app.on_event("startup")
 async def startup_event():
-    await seed_food_database()
+    try:
+        await client.admin.command("ping")
+        await seed_food_database()
+    except Exception as exc:
+        logger.exception("MongoDB unavailable during startup: %s", exc)
 
 # ===================== APP SETUP =====================
 
@@ -645,8 +657,8 @@ app.include_router(api_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_credentials=False,
+    allow_origins=[origin.strip() for origin in os.environ.get('CORS_ORIGINS', '*').split(',') if origin.strip()],
     allow_methods=["*"],
     allow_headers=["*"],
 )
