@@ -1,19 +1,66 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Leaf, ArrowRight } from 'lucide-react';
+import { Leaf, ArrowRight, Download, Sparkles } from 'lucide-react';
 
 export default function AuthPage() {
   const { login, register } = useAuth();
   const [tab, setTab] = useState('login');
   const [loading, setLoading] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isInstalled, setIsInstalled] = useState(false);
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [regForm, setRegForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+
+  useEffect(() => {
+    const checkInstalled = () => {
+      const standaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+      const iosStandalone = window.navigator.standalone === true;
+      setIsInstalled(standaloneMode || iosStandalone);
+    };
+
+    checkInstalled();
+
+    const handleBeforeInstallPrompt = (event) => {
+      event.preventDefault();
+      setDeferredPrompt(event);
+    };
+
+    const handleAppInstalled = () => {
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+      toast.success('DietLog installed! You can now launch it like a native app.');
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (!deferredPrompt) {
+      toast.info('Install prompt unavailable. Use your browser menu and tap "Install app" or "Add to Home Screen".');
+      return;
+    }
+
+    deferredPrompt.prompt();
+    const choiceResult = await deferredPrompt.userChoice;
+
+    if (choiceResult.outcome === 'accepted') {
+      toast.success('Installing DietLog...');
+    }
+
+    setDeferredPrompt(null);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -119,6 +166,23 @@ export default function AuthPage() {
                 {loading ? 'Signing in...' : 'Sign In'}
                 {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
               </Button>
+
+              <div className="relative overflow-hidden rounded-2xl border border-[#88C425]/30 bg-gradient-to-br from-white via-[#FAFEEB] to-[#F1F9D9] p-4 shadow-sm">
+                <Sparkles className="absolute -right-2 -top-2 h-10 w-10 text-[#88C425]/20" />
+                <p className="text-sm font-extrabold text-slate-900">Install DietLog for a faster, app-like experience</p>
+                <p className="mt-1 text-xs text-slate-600">
+                  Get one-tap access, full-screen focus, and smoother daily meal logging on any supported device.
+                </p>
+                <Button
+                  type="button"
+                  onClick={handleInstallApp}
+                  disabled={isInstalled}
+                  className="mt-3 h-10 w-full rounded-xl bg-slate-900 text-white hover:bg-slate-800"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  {isInstalled ? 'Already Installed' : 'Install App'}
+                </Button>
+              </div>
             </form>
           </TabsContent>
 
