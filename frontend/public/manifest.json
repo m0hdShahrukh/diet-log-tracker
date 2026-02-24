@@ -1,0 +1,15 @@
+{
+  "name": "Diet Log | By Mohd Shahrukh",
+  "short_name": "Diet Log",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#7ab21d",
+  "theme_color": "#7ab21d",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
