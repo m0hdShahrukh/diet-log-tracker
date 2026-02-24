@@ -50,7 +50,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFCF8] flex flex-col" data-testid="auth-page">
+    <div className="min-h-screen bg-[#FDFCF8] justify-center align-middle flex-col" data-testid="auth-page">
       {/* Hero */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 pt-12 pb-6">
         <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-[#88C425] to-[#76AD1B] flex items-center justify-center mb-6 shadow-lg">
