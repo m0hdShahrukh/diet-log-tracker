@@ -1,8 +1,11 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, Query
+from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo.errors import PyMongoError
+import certifi
 import os
 import logging
 from pathlib import Path
@@ -18,7 +21,28 @@ load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
+mongo_client_options = {
+    "serverSelectionTimeoutMS": int(os.environ.get("MONGO_SERVER_SELECTION_TIMEOUT_MS", "30000")),
+}
+
+if mongo_url.startswith("mongodb+srv://") or "tls=true" in mongo_url.lower():
+    mongo_client_options["tlsCAFile"] = certifi.where()
+
+
+def parse_cors_origins(raw_origins: str) -> list[str]:
+    cleaned = raw_origins.strip()
+    if cleaned in {"", "*"}:
+        return ["*"]
+
+    cleaned = cleaned.strip('[]')
+    origins = [
+        origin.strip().strip('"').strip("'").rstrip('/')
+        for origin in cleaned.split(',')
+        if origin.strip()
+    ]
+    return origins or ["*"]
+
+client = AsyncIOMotorClient(mongo_url, **mongo_client_options)
 db = client[os.environ['DB_NAME']]
 
 JWT_SECRET = os.environ.get('JWT_SECRET', 'dietlog-secret-key-change-in-prod')
@@ -635,9 +659,19 @@ async def seed_food_database():
         await db.water_logs.create_index([("user_id", 1), ("date", 1)])
         await db.users.create_index("email", unique=True)
 
+@app.exception_handler(PyMongoError)
+async def mongodb_exception_handler(request, exc):
+    logger.exception("MongoDB operation failed: %s", exc)
+    return JSONResponse(status_code=503, content={"detail": "Database temporarily unavailable"})
+
+
 @app.on_event("startup")
 async def startup_event():
-    await seed_food_database()
+    try:
+        await client.admin.command("ping")
+        await seed_food_database()
+    except Exception as exc:
+        logger.exception("MongoDB unavailable during startup: %s", exc)
 
 # ===================== APP SETUP =====================
 
@@ -645,8 +679,8 @@ app.include_router(api_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_credentials=False,
+    allow_origins=parse_cors_origins(os.environ.get('CORS_ORIGINS', '*')),
     allow_methods=["*"],
     allow_headers=["*"],
 )
