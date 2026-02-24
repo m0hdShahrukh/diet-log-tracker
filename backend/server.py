@@ -396,7 +396,7 @@ async def add_water(entry: WaterLogAdd, user=Depends(get_current_user)):
     
     if existing:
         new_amount = existing["total_ml"] + entry.amount_ml
-        new_entries = existing.get("entries", []) + [{"amount_ml": entry.amount_ml, "time": datetime.now(timezone.utc).isoformat()}]
+        new_entries = existing.get("entries", []) + [{"id": str(uuid.uuid4()), "amount_ml": entry.amount_ml, "time": datetime.now(timezone.utc).isoformat()}]
         await db.water_logs.update_one(
             {"user_id": user["id"], "date": date},
             {"$set": {"total_ml": new_amount, "entries": new_entries}}
@@ -408,12 +408,45 @@ async def add_water(entry: WaterLogAdd, user=Depends(get_current_user)):
             "user_id": user["id"],
             "date": date,
             "total_ml": entry.amount_ml,
-            "entries": [{"amount_ml": entry.amount_ml, "time": datetime.now(timezone.utc).isoformat()}],
+            "entries": [{"id": str(uuid.uuid4()), "amount_ml": entry.amount_ml, "time": datetime.now(timezone.utc).isoformat()}],
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.water_logs.insert_one(log_doc)
         del log_doc["_id"]
         return {"date": date, "total_ml": entry.amount_ml, "goal_ml": user.get("water_goal", 2000), "entries": log_doc["entries"]}
+
+
+@api_router.delete("/water-logs/last")
+async def remove_last_water_entry(date: str = None, user=Depends(get_current_user)):
+    if not date:
+        date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    log = await db.water_logs.find_one(
+        {"user_id": user["id"], "date": date},
+        {"_id": 0}
+    )
+
+    if not log or not log.get("entries"):
+        raise HTTPException(status_code=404, detail="No water entry found to remove")
+
+    entries = log.get("entries", [])
+    removed = entries[-1]
+    remaining_entries = entries[:-1]
+    amount_removed = int(removed.get("amount_ml", 0))
+    new_total = max(0, int(log.get("total_ml", 0)) - amount_removed)
+
+    await db.water_logs.update_one(
+        {"user_id": user["id"], "date": date},
+        {"$set": {"entries": remaining_entries, "total_ml": new_total}}
+    )
+
+    return {
+        "date": date,
+        "total_ml": new_total,
+        "goal_ml": user.get("water_goal", 2000),
+        "removed_entry": removed,
+        "entries": remaining_entries
+    }
 
 @api_router.get("/water-logs")
 async def get_water_log(date: str = None, user=Depends(get_current_user)):
