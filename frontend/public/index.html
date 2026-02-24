@@ -4,11 +4,12 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#7ab21d" />
     <meta name="description" content="A product of emergent.sh" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet" />
+    <link rel="manifest" href="/manifest.json" />
     <title>Diet Log | by Shahrukh</title>
     <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
     <!--
@@ -144,6 +145,15 @@
                 capturePerformance: false,
             },
         });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker registered!', reg))
+                    .catch(err => console.error('Service Worker registration failed: ', err));
+            });
+        }
     </script>
 </body>
 
