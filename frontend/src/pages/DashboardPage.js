@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
 import CalorieRing from '@/components/CalorieRing';
-import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -36,6 +35,7 @@ export default function DashboardPage() {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [waterUpdating, setWaterUpdating] = useState(false);
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -53,12 +53,27 @@ export default function DashboardPage() {
   }, [fetchDashboard]);
 
   const addWater = async (amount) => {
+    if (waterUpdating) return;
+
+    setWaterUpdating(true);
     try {
-      await api.post('/water-logs', { amount_ml: amount, date });
-      fetchDashboard();
+      const res = await api.post('/water-logs', { amount_ml: amount, date });
+      setDashboard((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          water: {
+            ...prev.water,
+            consumed_ml: res.data.total_ml,
+            goal_ml: res.data.goal_ml || prev.water.goal_ml,
+          },
+        };
+      });
       toast.success(`+${amount}ml water logged`);
     } catch {
       toast.error('Failed to log water');
+    } finally {
+      setWaterUpdating(false);
     }
   };
 
@@ -161,22 +176,25 @@ export default function DashboardPage() {
               style={{ width: `${waterPercent}%`, backgroundColor: 'var(--color-water)' }}
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-1 mr-auto">
               {Array.from({ length: 8 }).map((_, i) => (
                 <Droplets key={i} className={`w-4 h-4 ${i < waterGlasses ? 'text-sky-500' : 'text-slate-200'}`} />
               ))}
             </div>
-            {WATER_AMOUNTS.map((w) => (
-              <button
-                key={w.value}
-                data-testid={`water-add-${w.value}`}
-                onClick={() => addWater(w.value)}
-                className="px-3 py-1.5 text-xs font-semibold rounded-full bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors"
-              >
-                +{w.label}
-              </button>
-            ))}
+            <div className="grid grid-cols-3 gap-2 w-full sm:w-auto sm:flex sm:items-center">
+              {WATER_AMOUNTS.map((w) => (
+                <button
+                  key={w.value}
+                  data-testid={`water-add-${w.value}`}
+                  onClick={() => addWater(w.value)}
+                  disabled={waterUpdating}
+                  className="px-2 py-1.5 text-[11px] font-semibold rounded-full bg-sky-50 text-sky-600 hover:bg-sky-100 disabled:opacity-60 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                >
+                  +{w.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
