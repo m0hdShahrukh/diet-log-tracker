@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Diet Log</title>
+    <script>
+      // SPA fallback for static hosts that serve 404.html on refresh/deep-link.
+      // Redirect to root while preserving the original path and query.
+      var path = window.location.pathname + window.location.search + window.location.hash;
+      window.location.replace('/?redirect=' + encodeURIComponent(path));
+    </script>
+  </head>
+  <body></body>
+</html>
